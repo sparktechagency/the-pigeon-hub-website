@@ -12,8 +12,6 @@ export const exportToExcel = (nodes) => {
       Owner: node.data.owner || "N/A",
       Country: node.data.country || "N/A",
       Color: node.data.colorName || "N/A",
-      Generation:
-        node.data.generation !== undefined ? node.data.generation : "N/A",
       Achievements: node.data.achievements || "N/A",
       Description: node.data.description || "N/A",
     }));

@@ -325,15 +325,17 @@ const PigeonNode = ({ data }) => {
           )}
         </div>
 
-    {data.colorName && (
-  <div className="">
-    <h2 className=" text-black">{data.colorName}</h2>
-  </div>
-)}
+        {data.colorName && (
+          <div className="">
+            <h2 className=" text-black">{data.colorName}</h2>
+          </div>
+        )}
 
         {data.description && (
           <div className="">
-            <h2 className="text-black italic">{data?.description?.slice(0, 450)}</h2>
+            <h2 className="text-black italic">
+              {data?.description?.slice(0, 450)}
+            </h2>
           </div>
         )}
 
@@ -396,8 +398,6 @@ export default function PigeonPedigreeChart() {
         Owner: node.data.owner || "N/A",
         Country: node.data.country || "N/A",
         Color: node.data.colorName || "N/A",
-        Generation:
-          node.data.generation !== undefined ? node.data.generation : "N/A",
         Achievements: node.data.achievements || "N/A",
         Description: node.data.description || "N/A",
       }));
@@ -426,8 +426,41 @@ export default function PigeonPedigreeChart() {
       XLSX.utils.book_append_sheet(wb, ws, "Pigeon Pedigree");
 
       // Generate filename with current date
-      const currentDate = new Date().toISOString().split("T")[0];
-      const filename = `pigeon-pedigree-${currentDate}.xlsx`;
+      let filename = "pigeon-pedigree.xlsx";
+
+      const gen0Node = nodes.find((n) => n.data.generation === 0);
+      if (gen0Node && gen0Node.data) {
+        const pigeonData = gen0Node.data;
+
+        // Get country code (2-letter ISO code)
+        let countryCode = "";
+        if (pigeonData.country) {
+          const trimmed = pigeonData.country.trim();
+          if (trimmed.length === 2) {
+            countryCode = trimmed.toUpperCase();
+          } else {
+            const code = getCode(trimmed);
+            countryCode = code
+              ? code.toUpperCase()
+              : trimmed.substring(0, 2).toUpperCase();
+          }
+        }
+
+        const ringNumber = pigeonData.ringNumber || "";
+        const birthYear = pigeonData.birthYear || "";
+        const name = pigeonData.name
+          ? pigeonData.name.replace(/[^a-zA-Z0-9]/g, "-")
+          : "";
+
+        // Build filename parts
+        const parts = [countryCode, ringNumber, birthYear, name].filter(
+          Boolean
+        );
+
+        if (parts.length > 0) {
+          filename = `${parts.join("-")}.xlsx`;
+        }
+      }
 
       // Save file
       XLSX.writeFile(wb, filename);
