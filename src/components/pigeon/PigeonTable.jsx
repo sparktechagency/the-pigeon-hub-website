@@ -10,7 +10,6 @@ import {
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Card, CardContent } from "@/components/ui/card";
-import { Checkbox } from "@/components/ui/checkbox";
 import {
   Edit,
   Eye,
@@ -32,57 +31,41 @@ import {
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
-import { useRouter } from "next/navigation";
+import { useRouter, useSearchParams, usePathname } from "next/navigation";
 import { useDeletePigeonMutation } from "@/redux/featured/pigeon/pigeonApi";
 import { getImageUrl } from "../share/imageUrl";
 import { getCode } from "country-list";
 import Image from "next/image";
 import Swal from "sweetalert2";
-import { DeleteConfirm } from "../share/deleteConfimation";
 import { useMyProfileQuery } from "@/redux/featured/auth/authApi";
 import SyncHorizontalScroll from "../share/Scrollbar";
 
-const PigeonTable = ({
-  data,
-  isLoading,
-  currentPage,
-  onPageChange,
-  onEdit,
-}) => {
+const ITEMS_PER_PAGE = 50;
+
+const PigeonTable = ({ data, isLoading, onEdit }) => {
   const router = useRouter();
+  const pathname = usePathname();
+  const searchParams = useSearchParams();
   const [deletePigeon] = useDeletePigeonMutation();
   const { data: userData } = useMyProfileQuery();
   const userId = userData?._id;
-  console.log(data);
+
+  // Get current page from URL, default to 1
+  const currentPage = parseInt(searchParams.get("page") || "1", 10);
+
   // Sorting state
   const [sortConfig, setSortConfig] = useState({
     key: null,
     direction: null,
   });
 
-  // Grab scroll functionality
-  const tableContainerRef = useRef(null);
-  const [isGrabbing, setIsGrabbing] = useState(false);
-  const [startX, setStartX] = useState(0);
-  const [scrollLeft, setScrollLeft] = useState(0);
-
-  useEffect(() => {
-    if (isGrabbing) {
-      document.body.style.userSelect = "none";
-      document.body.style.cursor = "grabbing";
-    } else {
-      document.body.style.userSelect = "";
-      document.body.style.cursor = "";
-    }
-
-    return () => {
-      document.body.style.userSelect = "";
-      document.body.style.cursor = "";
-    };
-  }, [isGrabbing]);
-
   const pigeons = data?.data?.data || [];
-  const pagination = data?.data?.pagination;
+
+  // Calculate pagination
+  const totalItems = pigeons.length;
+  const totalPages = Math.ceil(totalItems / ITEMS_PER_PAGE);
+  const startIndex = (currentPage - 1) * ITEMS_PER_PAGE;
+  const endIndex = startIndex + ITEMS_PER_PAGE;
 
   // Sorting function
   const handleSort = (key) => {
@@ -95,7 +78,6 @@ const PigeonTable = ({
     setSortConfig({ key, direction });
   };
 
-  // Sort pigeons
   // Sort pigeons
   const sortedPigeons = React.useMemo(() => {
     if (!pigeons || pigeons.length === 0) {
@@ -129,6 +111,40 @@ const PigeonTable = ({
     return sortedData;
   }, [pigeons, sortConfig.key, sortConfig.direction]);
 
+  // Get paginated data
+  const paginatedPigeons = sortedPigeons.slice(startIndex, endIndex);
+
+  // Function to update URL with new page
+  const updatePage = (newPage) => {
+    const params = new URLSearchParams(searchParams.toString());
+    params.set("page", newPage.toString());
+    router.push(`${pathname}?${params.toString()}`);
+  };
+
+  // Handle page changes
+  const handlePrevPage = () => {
+    if (currentPage > 1) {
+      updatePage(currentPage - 1);
+    }
+  };
+
+  const handleNextPage = () => {
+    if (currentPage < totalPages) {
+      updatePage(currentPage + 1);
+    }
+  };
+
+  const handlePageClick = (pageNum) => {
+    updatePage(pageNum);
+  };
+
+  // Reset to page 1 when filters change
+  useEffect(() => {
+    if (currentPage > totalPages && totalPages > 0) {
+      updatePage(1);
+    }
+  }, [totalItems]);
+
   if (isLoading) {
     return <TableSkeleton />;
   }
@@ -157,18 +173,6 @@ const PigeonTable = ({
       return <ArrowDown className="h-4 w-4 ml-1 inline" />;
     }
     return <ArrowUpDown className="h-4 w-4 ml-1 inline" />;
-  };
-
-  const handlePrevPage = () => {
-    if (currentPage > 1) {
-      onPageChange(currentPage - 1);
-    }
-  };
-
-  const handleNextPage = () => {
-    if (currentPage < pagination?.totalPage) {
-      onPageChange(currentPage + 1);
-    }
   };
 
   const handleView = (pigeonId) => {
@@ -244,6 +248,45 @@ const PigeonTable = ({
     return `${prefix}_${filename}`;
   };
 
+  // Generate page numbers to display
+  const getPageNumbers = () => {
+    const pages = [];
+    const maxPagesToShow = 5;
+
+    if (totalPages <= maxPagesToShow) {
+      // Show all pages if total is small
+      for (let i = 1; i <= totalPages; i++) {
+        pages.push(i);
+      }
+    } else {
+      // Always show first page
+      pages.push(1);
+
+      let startPage = Math.max(2, currentPage - 1);
+      let endPage = Math.min(totalPages - 1, currentPage + 1);
+
+      // Add ellipsis after first page if needed
+      if (startPage > 2) {
+        pages.push("...");
+      }
+
+      // Add middle pages
+      for (let i = startPage; i <= endPage; i++) {
+        pages.push(i);
+      }
+
+      // Add ellipsis before last page if needed
+      if (endPage < totalPages - 1) {
+        pages.push("...");
+      }
+
+      // Always show last page
+      pages.push(totalPages);
+    }
+
+    return pages;
+  };
+
   return (
     <div className="space-y-4">
       <div>
@@ -251,11 +294,12 @@ const PigeonTable = ({
           <div>
             <SyncHorizontalScroll
               containerClassName="overflow-x-auto border rounded-lg shadow-md bg-red-600 custom-scrollbar hide-scrollbar cursor-grab"
-              watch={sortedPigeons.length}
+              watch={paginatedPigeons.length}
             >
               <div
                 style={{
-                  minWidth: sortedPigeons.length > 0 ? "max-content" : "100%",
+                  minWidth:
+                    paginatedPigeons.length > 0 ? "max-content" : "100%",
                 }}
                 className="bg-red-600 rounded-lg"
               >
@@ -268,7 +312,9 @@ const PigeonTable = ({
                 `}</style>
                 <Table
                   scroll={
-                    sortedPigeons.length > 0 ? { x: "max-content" } : undefined
+                    paginatedPigeons.length > 0
+                      ? { x: "max-content" }
+                      : undefined
                   }
                 >
                   <TableHeader className="bg-foreground hover:bg-foreground py-6">
@@ -292,9 +338,7 @@ const PigeonTable = ({
                       <TableHead className="text-white">
                         Breeder Rating
                       </TableHead>
-                      <TableHead className="text-white">
-                        Racer Rating
-                      </TableHead>
+                      <TableHead className="text-white">Racer Rating</TableHead>
                       <TableHead className="text-white">Status</TableHead>
                       <TableHead className="text-white">Gender</TableHead>
                       <TableHead className="text-white">Color</TableHead>
@@ -303,7 +347,7 @@ const PigeonTable = ({
                     </TableRow>
                   </TableHeader>
                   <TableBody>
-                    {sortedPigeons.map((pigeon, index) => (
+                    {paginatedPigeons.map((pigeon) => (
                       <TableRow
                         key={pigeon._id}
                         className="bg-background hover:bg-foreground text-white"
@@ -533,6 +577,68 @@ const PigeonTable = ({
           </div>
         </CardContent>
       </div>
+
+      {/* Pagination Controls */}
+      {totalPages > 1 && (
+        <div className="flex items-center justify-end">
+          <div className="flex items-center gap-2">
+            {/* Previous Button */}
+            <Button
+              onClick={handlePrevPage}
+              disabled={currentPage === 1}
+              variant="outline"
+              size="sm"
+              className={` px-4 py-[18px] border border-gray-500 text-white hover:bg-accent-foreground/80 ${
+                currentPage === 1 ? "opacity-50 cursor-not-allowed" : ""
+              }`}
+            >
+              {/* <ChevronLeft className="h-4 w-4" /> */}
+              Previous
+            </Button>
+
+            {/* Page Numbers */}
+            <div className="flex items-center gap-1">
+              {getPageNumbers().map((pageNum, idx) =>
+                pageNum === "..." ? (
+                  <span key={`ellipsis-${idx}`} className="px-2 text-white">
+                    ...
+                  </span>
+                ) : (
+                  <Button
+                    key={pageNum}
+                    onClick={() => handlePageClick(pageNum)}
+                    variant={currentPage === pageNum ? "default" : "outline"}
+                    size="sm"
+                    className={`h-10 w-10 p-0   ${
+                      currentPage === pageNum
+                        ? "bg-accent text-white hover:text-white"
+                        : "text-white hover:bg-accent/80"
+                    }`}
+                  >
+                    {pageNum}
+                  </Button>
+                )
+              )}
+            </div>
+
+            {/* Next Button */}
+            <Button
+              onClick={handleNextPage}
+              disabled={currentPage === totalPages}
+              variant="outline"
+              size="sm"
+              className={` px-4 py-[18px] border border-gray-500 text-white hover:bg-accent-foreground/80 ${
+                currentPage === totalPages
+                  ? "opacity-50 cursor-not-allowed"
+                  : ""
+              }`}
+            >
+              {/* <ChevronRight className="h-4 w-4" /> */}
+              Next
+            </Button>
+          </div>
+        </div>
+      )}
     </div>
   );
 };

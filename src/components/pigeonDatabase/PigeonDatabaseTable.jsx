@@ -303,6 +303,95 @@ const PigeonTable = ({
     }
   };
 
+  // Pagination helper function
+  const renderPageNumbers = () => {
+    if (!pagination || pagination.totalPage <= 1) return null;
+
+    const totalPages = pagination.totalPage;
+    const pages = [];
+    const maxVisiblePages = 5;
+
+    let startPage = Math.max(1, currentPage - Math.floor(maxVisiblePages / 2));
+    let endPage = Math.min(totalPages, startPage + maxVisiblePages - 1);
+
+    if (endPage - startPage < maxVisiblePages - 1) {
+      startPage = Math.max(1, endPage - maxVisiblePages + 1);
+    }
+
+    // First page
+    if (startPage > 1) {
+      pages.push(
+        <Button
+          key={1}
+          onClick={() => onPageChange(1)}
+          variant={currentPage === 1 ? "default" : "outline"}
+          size="sm"
+          className={`w-10 h-10 ${
+            currentPage === 1
+              ? "bg-accent text-white hover:bg-accent"
+              : "hover:bg-gray-100"
+          }`}
+        >
+          1
+        </Button>
+      );
+      if (startPage > 2) {
+        pages.push(
+          <span key="start-ellipsis" className="px-2 text-gray-500 ">
+            ...
+          </span>
+        );
+      }
+    }
+
+    // Page numbers
+    for (let i = startPage; i <= endPage; i++) {
+      pages.push(
+        <Button
+          key={i}
+          onClick={() => onPageChange(i)}
+          variant={currentPage === i ? "default" : "outline"}
+          size="sm"
+          className={`w-10 h-10 ${
+            currentPage === i ? "bg-accent text-white" : "hover:bg-accent"
+          }`}
+        >
+          {i}
+        </Button>
+      );
+    }
+
+    // Last page
+    if (endPage < totalPages) {
+      if (endPage < totalPages - 1) {
+        pages.push(
+          <span key="end-ellipsis" className="px-2 text-gray-500">
+            ...
+          </span>
+        );
+      }
+      pages.push(
+        <Button
+          key={totalPages}
+          onClick={() => onPageChange(totalPages)}
+          variant={currentPage === totalPages ? "default" : "outline"}
+          size="sm"
+          className={`w-10 h-10 ${
+            currentPage === totalPages
+              ? "bg-accent text-white hover:bg-accent/90"
+              : "hover:bg-gray-100"
+          }`}
+        >
+          {totalPages}
+        </Button>
+      );
+    }
+
+    return pages;
+  };
+
+  const showPagination = pagination && pagination.totalPage > 1;
+
   return (
     <div className="space-y-4">
       <div>
@@ -349,9 +438,7 @@ const PigeonTable = ({
                       <TableHead className="text-white">
                         Breeder Rating
                       </TableHead>
-                      <TableHead className="text-white">
-                        Racer Rating
-                      </TableHead>
+                      <TableHead className="text-white">Racer Rating</TableHead>
                       <TableHead className="text-white">Verified</TableHead>
                       <TableHead className="text-white">Status</TableHead>
                       <TableHead className="text-white">Gender</TableHead>
@@ -418,7 +505,9 @@ const PigeonTable = ({
                                     alt={pigeon.country}
                                     className="w-5 h-4 rounded-sm"
                                   />
-                                  <p className="text-[#B0B6A4]">{countryCode}</p>
+                                  <p className="text-[#B0B6A4]">
+                                    {countryCode}
+                                  </p>
                                 </div>
                               )
                             );
@@ -592,6 +681,58 @@ const PigeonTable = ({
           </div>
         </CardContent>
       </div>
+
+      {/* Pagination Controls - Only show if total items > 40 or multiple pages */}
+      {showPagination && (
+        <div>
+          <CardContent className="p-4">
+            <div className="flex flex-col sm:flex-row items-center justify-end gap-4">
+              {/* Pagination Info */}
+              {/* <div className="text-sm text-gray-600">
+                Showing page {currentPage} of {pagination.totalPage} (
+                {pagination.total} total pigeons)
+              </div> */}
+
+              {/* Pagination Controls */}
+              <div className="flex items-center gap-2">
+                {/* Previous Button */}
+                <Button
+                  onClick={handlePrevPage}
+                  disabled={currentPage === 1}
+                  variant="outline"
+                  size="sm"
+                  className="h-10 px-3 disabled:opacity-50 disabled:cursor-not-allowed text-white disable:text-black"
+                >
+                  <ChevronLeft className="h-4 w-4 mr-1" />
+                  Previous
+                </Button>
+
+                {/* Page Numbers */}
+                <div className="hidden sm:flex items-center gap-1 text-white ">
+                  {renderPageNumbers()}
+                </div>
+
+                {/* Current Page (Mobile) */}
+                <div className="sm:hidden px-3 py-2 text-sm font-medium ">
+                  {currentPage} / {pagination.totalPage}
+                </div>
+
+                {/* Next Button */}
+                <Button
+                  onClick={handleNextPage}
+                  disabled={currentPage === pagination.totalPage}
+                  variant="outline"
+                  size="sm"
+                  className="h-10 px-3 disabled:opacity-50 disabled:cursor-not-allowed cursor-pointer text-white disable:text-black"
+                >
+                  Next
+                  <ChevronRight className="h-4 w-4 ml-1" />
+                </Button>
+              </div>
+            </div>
+          </CardContent>
+        </div>
+      )}
     </div>
   );
 };
