@@ -44,6 +44,7 @@ import moment from "moment";
 import { HiOutlineStatusOffline, HiOutlineStatusOnline } from "react-icons/hi";
 import Swal from "sweetalert2";
 import { toast } from "sonner";
+import Link from "next/link";
 
 export default function ProfileDashboardComponents() {
   const [imageFile, setImageFile] = useState(null);
@@ -386,7 +387,7 @@ export default function ProfileDashboardComponents() {
                       type="text"
                       name="contact"
                       value={formData.contact}
-                      maxLength={16} 
+                      maxLength={16}
                       onChange={handleChange}
                       className="w-full border rounded-md focus:ring-2 py-6 focus:ring-red-500 focus:border-red-500"
                       placeholder="Enter your contact number"
@@ -555,33 +556,44 @@ export default function ProfileDashboardComponents() {
         )}
       </div>
 
-      {userData?.subscription && (
-        <div className="mt-6">
-          {userData?.subscription.status === "active" ? (
-            <div className="flex justify-center">
-              <Button
-                onClick={handleCancelSubscription}
-                className="w-1/2 text-white  px-4 py-6 rounded-md "
-              >
-                Cancel Subscription
-              </Button>
-            </div>
-          ) : userData?.subscription.status === "cancel" ? (
-            new Date(userData?.subscription.endDate) > new Date() ? (
-              <p className="text-accent font-semibold">
-                Already cancelled. Will expire on{" "}
-                {new Date(userData?.subscription.endDate).toLocaleDateString()}.
-              </p>
-            ) : (
-              <p className="text-gray-600 font-semibold">
-                Your package has expired.
-              </p>
-            )
-          ) : null}
+      <div className="flex justify-between items-center mt-8 gap-4">
+        {userData?.subscription && (
+          <div className="flex-1">
+            {userData?.subscription.status === "active" ? (
+              <div className="">
+                <Button
+                  onClick={handleCancelSubscription}
+                  className=" text-white  px-4 py-6 rounded-md w-full"
+                >
+                  Cancel Subscription
+                </Button>
+              </div>
+            ) : userData?.subscription.status === "cancel" ? (
+              new Date(userData?.subscription.endDate) > new Date() ? (
+                <p className="text-accent font-semibold">
+                  Already cancelled. Will expire on{" "}
+                  {new Date(
+                    userData?.subscription.endDate
+                  ).toLocaleDateString()}
+                  .
+                </p>
+              ) : (
+                <p className="text-gray-600 font-semibold">
+                  Your package has expired.
+                </p>
+              )
+            ) : null}
+          </div>
+        )}
+        <div className="flex-1">
+          <Link href="/subscription" className="">
+            <Button className="rounded-sm py-6 text-white w-full">
+              Upgrade Package
+            </Button>
+          </Link>
         </div>
-      )}
-
-      {/* <SubscriptionCard packageData={packageData} userData={userData} /> */}
+        {/* <SubscriptionCard packageData={packageData} userData={userData} /> */}
+      </div>
     </div>
   );
 }
