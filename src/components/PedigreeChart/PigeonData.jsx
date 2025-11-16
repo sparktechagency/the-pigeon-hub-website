@@ -169,7 +169,7 @@ export const convertBackendToExistingFormat = (backendResponse, role) => {
         generation: 1,
         position: "Mother",
         birthYear: subject.motherRingId.birthYear?.toString(),
-        color: subject?.motherRingId?.motherRingId?.colorField || "#fff",
+        color: subject?.motherRingId?.colorField || "#fff",
         colorName: subject.motherRingId.color,
         description:subject.motherRingId.shortInfo,
         achievements: formatResults(subject.motherRingId.addresults),
