@@ -56,6 +56,7 @@ const PigeonTable = ({
   currentPage,
   onPageChange,
   onEdit,
+  onSortChange,
 }) => {
   const router = useRouter();
   const [deletePigeon] = useDeletePigeonMutation();
@@ -123,34 +124,20 @@ const PigeonTable = ({
       direction = null;
     }
     setSortConfig({ key, direction });
+
+    // Send sort value to parent component (backend)
+    if (direction) {
+      const sortValue = direction === "asc" ? key : `-${key}`;
+      onSortChange?.(sortValue);
+    } else {
+      onSortChange?.(null);
+    }
   };
 
-  // Sort pigeons
+  // Sort pigeons - Backend handles sorting now
   const sortedPigeons = React.useMemo(() => {
-    let sortedData = [...pigeons];
-    if (sortConfig.key && sortConfig.direction) {
-      sortedData.sort((a, b) => {
-        let aValue, bValue;
-
-        if (sortConfig.key === "name") {
-          aValue = a.name?.toLowerCase() || "";
-          bValue = b.name?.toLowerCase() || "";
-        } else if (sortConfig.key === "birthYear") {
-          aValue = parseInt(a.birthYear) || 0;
-          bValue = parseInt(b.birthYear) || 0;
-        }
-
-        if (aValue < bValue) {
-          return sortConfig.direction === "asc" ? -1 : 1;
-        }
-        if (aValue > bValue) {
-          return sortConfig.direction === "asc" ? 1 : -1;
-        }
-        return 0;
-      });
-    }
-    return sortedData;
-  }, [pigeons, sortConfig]);
+    return pigeons;
+  }, [pigeons]);
 
   // Render sort icon
   const renderSortIcon = (columnKey) => {
@@ -442,7 +429,7 @@ const PigeonTable = ({
                       <TableHead className="text-white">Verified</TableHead>
                       <TableHead className="text-white">Status</TableHead>
                       <TableHead className="text-white">Gender</TableHead>
-                      <TableHead className="text-white">Iconic Score</TableHead>
+                      <TableHead className="text-white"   onClick={() => handleSort("iconicScore")}> Iconic Score {renderSortIcon("iconicScore")}</TableHead>
                       <TableHead className="text-white">Color</TableHead>
                       <TableHead className="text-white">Location</TableHead>
                       <TableHead className="text-white w-20">Actions</TableHead>
@@ -490,7 +477,9 @@ const PigeonTable = ({
                               </TooltipContent>
                             </Tooltip>
                           </TooltipProvider>
-                          {pigeon.name}
+                          {pigeon.name.length > 25
+                            ? pigeon.name.slice(0, 25) + "..."
+                            : pigeon.name }
                         </TableCell>
                         <TableCell>
                           {(() => {
@@ -515,7 +504,9 @@ const PigeonTable = ({
                         </TableCell>
 
                         <TableCell>
-                          {pigeon?.breeder?.loftName || "N/A"}
+                          {pigeon?.breeder?.loftName.length > 25
+                            ? pigeon?.breeder?.loftName.slice(0, 25) + "..."
+                            : pigeon?.breeder?.loftName || "N/A"}
                         </TableCell>
 
                         <TableCell className="font-mono text-sm">

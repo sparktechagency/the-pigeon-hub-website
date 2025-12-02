@@ -13,15 +13,16 @@ const PigeonDatabasePage = () => {
   const router = useRouter();
   const searchParams = useSearchParams();
 
-  // URL থেকে page number read করা
+ 
   const pageFromUrl = parseInt(searchParams.get("page")) || 1;
 
   const [filters, setFilters] = useState([]);
   const [currentPage, setCurrentPage] = useState(pageFromUrl);
   const [searchTerm, setSearchTerm] = useState("");
   const [selectedStatus, setSelectedStatus] = useState("");
+  const [sortBy, setSortBy] = useState(null);
 
-  // URL change হলে state update করা
+
   useEffect(() => {
     const page = parseInt(searchParams.get("page")) || 1;
     setCurrentPage(page);
@@ -33,6 +34,7 @@ const PigeonDatabasePage = () => {
     { name: "limit", value: 40 },
     ...(searchTerm ? [{ name: "searchTerm", value: searchTerm }] : []),
     ...(selectedStatus ? [{ name: "status", value: selectedStatus }] : []),
+    ...(sortBy ? [{ name: "sort", value: sortBy }] : []),
     ...filters,
   ];
 
@@ -74,7 +76,12 @@ const PigeonDatabasePage = () => {
     router.push(`/add-pigeon?edit=${pigeonId}`);
   };
 
-  // Page change handler যা URL update করবে
+  const handleSortChange = (sortValue) => {
+    setSortBy(sortValue);
+    setCurrentPage(1);
+    router.push("?page=1", { scroll: false });
+  };
+
   const handlePageChange = (newPage) => {
     setCurrentPage(newPage);
     router.push(`?page=${newPage}`, { scroll: false });
@@ -120,6 +127,7 @@ const PigeonDatabasePage = () => {
         currentPage={currentPage}
         onPageChange={handlePageChange}
         onEdit={handleEditPigeon}
+        onSortChange={handleSortChange}
         onStatusFilter={handleStatusFilter}
         selectedStatus={selectedStatus}
       />
