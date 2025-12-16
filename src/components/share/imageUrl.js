@@ -13,16 +13,3 @@ export const getImageUrl = (path) => {
   }
 };
 
-// Return a valid URL for video thumbnails (or video assets). If a full URL
-// is provided we return it as-is, otherwise we prefix with the same base URL
-// used for images.
-export const getVideoAndThumbnail = (path) => {
-  if (!path || typeof path !== "string") return "";
-
-  if (path.startsWith("http://") || path.startsWith("https://")) {
-    return path;
-  }
-
-  const baseUrl = "https://ftp.thepigeonhub.com";
-  return `${baseUrl}/${path}`;
-};

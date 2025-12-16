@@ -6,7 +6,7 @@ const PigeonDatabase = () => {
     <div>
       {/* Wrap client component in Suspense so next can prerender without CSR bailout */}
       <Suspense
-        fallback={<div className="p-6">Loading Pigeon Database...</div>}
+        fallback={<div className="p-6">base...</div>}
       >
         <PigeonDatabasePage />
       </Suspense>
