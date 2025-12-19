@@ -16,7 +16,8 @@ const nextConfig = {
       "res.cloudinary.com",
       "50.6.200.33",
       "flagcdn.com",
-      "ftp.thepigeonhub.com"
+      "ftp.thepigeonhub.com",
+      "api.thepigeonhub.com",
     ],
     remotePatterns: [
       {
