@@ -58,7 +58,7 @@ export default function ProfileDashboardComponents() {
     contact: "",
   });
   const [phoneError, setPhoneError] = useState("");
-
+  console.log("profileResponse", imagePreview);
   // Extract user data from the response
   const userData = profileResponse?.data || profileResponse; // Handle both cases
   console.log("profile", userData);
