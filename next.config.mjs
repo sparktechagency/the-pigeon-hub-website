@@ -17,7 +17,8 @@ const nextConfig = {
       "50.6.200.33",
       "flagcdn.com",
       // "ftp.thepigeonhub.com",
-      "api.thepigeonhub.com",
+      // "api.thepigeonhub.com",
+      "ftp.thepigeonhub.com",
     ],
     remotePatterns: [
       {

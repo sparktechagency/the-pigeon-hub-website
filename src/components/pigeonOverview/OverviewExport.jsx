@@ -10,7 +10,7 @@ const PigeonPdfExport = ({ pigeon, siblings = [] }) => {
     if (path?.startsWith("http://") || path?.startsWith("https://")) {
       return path;
     } else {
-      const baseUrl = "https://api.thepigeonhub.com";
+      const baseUrl = "https://ftp.thepigeonhub.com";
       return `${baseUrl}/${path}`;
     }
   };
