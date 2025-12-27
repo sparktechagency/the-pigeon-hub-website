@@ -208,24 +208,18 @@ export const exportPedigreeToPDF = async (
     };
 
     // Helper: Add text with word wrap
-    const addWrappedText = (
-      text,
-      x,
-      y,
-      maxWidth,
-      lineHeight = 3.5,
-      maxLines = null
-    ) => {
-      if (!text) return y;
-      const lines = pdf.splitTextToSize(String(text), maxWidth);
-      const linesToShow = maxLines ? lines.slice(0, maxLines) : lines;
-      linesToShow.forEach((line) => {
-        if (y < pageHeight - margin) {
-          pdf.text(line, x, y);
-          y += lineHeight;
-        }
+    const addWrappedText = (text, x, y, maxWidth, lineHeight, maxLines) => {
+      // Normalize text first - remove multiple spaces
+      const normalizedText = String(text).replace(/ {1,}/g, ' ').trim();
+      
+      const lines = pdf.splitTextToSize(normalizedText, maxWidth);
+      const limitedLines = lines.slice(0, maxLines);
+      
+      limitedLines.forEach((line, index) => {
+        pdf.text(line, x, y + (index * lineHeight));
       });
-      return y;
+      
+      return y + (limitedLines.length * lineHeight);
     };
 
     // Collect borders to draw at the end
@@ -418,61 +412,71 @@ export const exportPedigreeToPDF = async (
         currentY += 0;
       }
 
-      // Calculate available space for description and achievements
-      const availableSpace = y + height - currentY - 3;
-      const hasDescription =
-        data.description && data.description.trim().length > 0;
-      const hasAchievements =
-        data.achievements && data.achievements.trim().length > 0;
+     // Calculate available space for description and achievements
+const availableSpace = y + height - currentY - 3;
+const hasDescription =
+  data.description && data.description.trim().length > 0;
+const hasAchievements =
+  data.achievements && data.achievements.trim().length > 0;
 
-      // === DESCRIPTION ===
-      if (hasDescription && availableSpace > 10) {
-        pdf.setFontSize(6);
-        pdf.setFont("helvetica", "italic");
-        pdf.setTextColor(0, 0, 0);
+// === DESCRIPTION ===
+if (hasDescription && availableSpace > 10) {
+  pdf.setFontSize(6);
+  pdf.setFont("helvetica", "italic");
+  pdf.setTextColor(0, 0, 0);
 
-        // If no achievements, use more space for description
-        const descriptionSpace = hasAchievements
-          ? availableSpace * 0.5
-          : availableSpace - 5;
-        const maxDescLines = Math.floor(descriptionSpace / 3);
+  // If no achievements, use more space for description
+  const descriptionSpace = hasAchievements
+    ? availableSpace * 0.5
+    : availableSpace - 5;
+  const maxDescLines = Math.floor(descriptionSpace / 3);
 
-        if (maxDescLines > 0) {
-          currentY = addWrappedText(
-            String(data.description),
-            leftMargin,
-            currentY,
-            contentWidth,
-            3,
-            maxDescLines
-          );
-          currentY += 0;
-        }
-      }
+  if (maxDescLines > 0) {
+    // Replace multiple consecutive spaces with single space, but keep newlines
+    const normalizedDescription = String(data.description)
+      .replace(/[ \t]+/g, ' ')  // Replace multiple spaces/tabs with single space
+      .trim();
+    
+    currentY = addWrappedText(
+      normalizedDescription,
+      leftMargin,
+      currentY,
+      contentWidth,
+      3,
+      maxDescLines
+    );
+    currentY += 0;
+  }
+}
 
-      // === ACHIEVEMENTS ===
-      if (hasAchievements) {
-        const remainingSpace = y + height - currentY - 2;
+// === ACHIEVEMENTS ===
+if (hasAchievements) {
+  const remainingSpace = y + height - currentY - 2;
 
-        if (remainingSpace > 5) {
-          pdf.setFontSize(5.5);
-          pdf.setFont("helvetica", "normal");
-          pdf.setTextColor(0, 0, 0);
+  if (remainingSpace > 5) {
+    pdf.setFontSize(5.5);
+    pdf.setFont("helvetica", "normal");
+    pdf.setTextColor(0, 0, 0);
 
-          const maxAchvLines = Math.floor(remainingSpace / 2.5);
-          if (maxAchvLines > 0) {
-            currentY = addWrappedText(
-              String(data.achievements),
-              leftMargin,
-              currentY,
-              contentWidth,
-              2.5,
-              maxAchvLines
-            );
-          }
-        }
-      }
-    };
+    const maxAchvLines = Math.floor(remainingSpace / 2.5);
+    if (maxAchvLines > 0) {
+      // Replace multiple consecutive spaces with single space, but keep newlines
+      const normalizedAchievements = String(data.achievements)
+        .replace(/[ \t]+/g, ' ')  // Replace multiple spaces/tabs with single space
+        .trim();
+      
+      currentY = addWrappedText(
+        normalizedAchievements,
+        leftMargin,
+        currentY,
+        contentWidth,
+        2.5,
+        maxAchvLines
+      );
+    }
+  }
+}
+}
 
     // === LOGO ===
     if (logoImage) {
