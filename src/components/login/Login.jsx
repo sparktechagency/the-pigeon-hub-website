@@ -29,17 +29,13 @@ export default function LoginUser() {
 
     try {
       const res = await login({ email, password }).unwrap();
-      console.log("Login Response:", res);
       
       const accessToken = res.data.accessToken;
-      console.log("Access Token:", accessToken);
 
       // Decode token to get user role
       const decodedToken = decodeToken(accessToken);
-      console.log("Decoded Token:", decodedToken);
       
       const userRole = decodedToken?.role;
-      console.log("User Role from Token:", userRole);
 
       // Save token to localStorage
       localStorage.setItem("token", accessToken);
@@ -55,13 +51,10 @@ export default function LoginUser() {
 
       // Redirect based on role
       if (userRole === "PAIDUSER" || userRole === "SUPER_ADMIN") {
-        console.log("Redirecting PAIDUSER to home page");
         router.push("/loft-overview");
       } else if (userRole === "USER") {
-        console.log("Redirecting USER to subscription page");
         router.push("/subscription");
       } else {
-        console.log("Unknown role, redirecting to home");
         router.push("/");
       }
       

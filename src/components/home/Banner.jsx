@@ -133,7 +133,8 @@ export default function PigeonHub() {
     <div
       className="w-full h-screen bg-cover bg-center bg-no-repeat relative overflow-hidden"
       style={{
-        backgroundImage: `url('https://i.ibb.co.com/WpnfSfZb/Log-in.png')`,
+        // backgroundImage: `url('https://i.ibb.co.com/WpnfSfZb/Log-in.png')`,
+        backgroundImage: `url('/assests/bg-banner.webp')`,
        
       }}
     >

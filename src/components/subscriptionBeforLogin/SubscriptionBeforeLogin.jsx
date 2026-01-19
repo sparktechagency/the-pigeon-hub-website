@@ -9,10 +9,8 @@ import { useRouter } from "next/navigation";
 const SubscriptionBeforeLogin = () => {
   const { data: userData } = useMyProfileQuery();
   const router = useRouter();
-  console.log("userData", userData?.email);
   const { data, isLoading } = useGetWebPackagesQuery();
   const packages = data?.data;
-  console.log(packages);
   const usedFreeTrial = userData?.hasUsedFreeTrial;
   // Static features for free plan
   const freeFeatures = [

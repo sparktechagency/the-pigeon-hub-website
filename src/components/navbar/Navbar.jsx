@@ -91,7 +91,7 @@ export default function Navbar() {
   // Redux queries and mutations
   const { data: userData } = useMyProfileQuery();
   const role = userData?.role;
-  console.log("navbar", userData);
+  // console.log("navbar", userData);
   const {
     data: notificationData,
     isLoading,
@@ -137,7 +137,7 @@ export default function Navbar() {
         password: deletePassword,
       }).unwrap();
 
-      console.log("Account deletion API response:", result);
+      // console.log("Account deletion API response:", result);
 
       // Success - update Redux state
       dispatch(deleteAccountSuccess());

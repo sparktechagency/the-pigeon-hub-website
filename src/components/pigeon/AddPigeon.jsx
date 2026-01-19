@@ -42,9 +42,6 @@ const AddPigeonContainer = ({ pigeonId }) => {
   const [selectedFatherId, setSelectedFatherId] = useState("");
   const [selectedMotherId, setSelectedMotherId] = useState("");
   const { data: allPigeonName } = useGetAllPigeonNameQuery();
-  console.log("allPigeonName", allPigeonName);
-  console.log("selectedFatherId", selectedFatherId);
-  console.log("selectedMotherId", selectedMotherId);
 
   const [createPigeon, { isLoading: isCreating }] = useCreatePigeonMutation();
   const [updatePigeon, { isLoading: isUpdating }] = useUpdatePigeonMutation();
@@ -53,7 +50,6 @@ const AddPigeonContainer = ({ pigeonId }) => {
     useGetSinglePigeonQuery(editId, {
       skip: !editId,
     });
-  console.log("singlePigeon", singlePigeon);
   const { data: breeder } = useGetBreederQuery();
 
   const { data: fatherData } = useGetAllPigeonSearchQuery(fatherSearchTerm);
@@ -71,8 +67,6 @@ const AddPigeonContainer = ({ pigeonId }) => {
   const motherList = (motherData?.data || []).filter(
     (item) => item.gender === "Hen"
   );
-  console.log("fatherList", fatherList);
-  console.log("motherList", motherList);
   const breederList = breeder?.data?.breeder;
 
   const [photos, setPhotos] = useState([]);
@@ -98,15 +92,10 @@ const AddPigeonContainer = ({ pigeonId }) => {
   };
 
   const [pigeonPhoto, setPigeonPhoto] = useState(null);
-  console.log("pigeonPhoto", pigeonPhoto);
   const [eyePhoto, setEyePhoto] = useState(null);
-  console.log("eyePhoto", eyePhoto);
   const [ownershipPhoto, setOwnershipPhoto] = useState(null);
-  console.log("ownershipPhoto", ownershipPhoto);
   const [pedigreePhoto, setPedigreePhoto] = useState(null);
-  console.log("pedigreePhoto", pedigreePhoto);
   const [DNAPhoto, setDNAPhoto] = useState(null);
-  console.log("DNAPhoto", DNAPhoto);
   const [breederSearchTerm, setBreederSearchTerm] = useState("");
   const [selectedBreeder, setSelectedBreeder] = useState(null);
   const [showBreederDropdown, setShowBreederDropdown] = useState(false);
@@ -114,8 +103,6 @@ const AddPigeonContainer = ({ pigeonId }) => {
   const [motherRingNumber, setMotherRingNumber] = useState("");
   const [selectedFather, setSelectedFather] = useState();
   const [selectedMother, setSelectedMother] = useState();
-  console.log("fatherRingNumber", fatherRingNumber);
-  console.log("motherRingNumber", motherRingNumber);
 
   const currentYear = new Date().getFullYear();
   const futureYear = currentYear + 2;
@@ -144,8 +131,6 @@ const AddPigeonContainer = ({ pigeonId }) => {
     setSearch(year.toString());
     setValue("birthYear", year);
     setShowDropdown(false);
-
-    console.log("Selected year:", year);
   };
 
   // Generic photo upload handler

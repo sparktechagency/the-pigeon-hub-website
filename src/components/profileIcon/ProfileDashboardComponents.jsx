@@ -58,10 +58,8 @@ export default function ProfileDashboardComponents() {
     contact: "",
   });
   const [phoneError, setPhoneError] = useState("");
-  console.log("profileResponse", imagePreview);
   // Extract user data from the response
-  const userData = profileResponse?.data || profileResponse; // Handle both cases
-  console.log("profile", userData);
+  const userData = profileResponse?.data || profileResponse; 
 
   const { data: packageResponse } = useRunningPackageQuery();
   const packageData = packageResponse?.data;
@@ -114,7 +112,6 @@ export default function ProfileDashboardComponents() {
   const handleImageChange = (e) => {
     if (e.target.files && e.target.files[0]) {
       const file = e.target.files[0];
-      console.log("Selected file:", file); // Debug log
       setImageFile(file);
     }
   };
@@ -132,13 +129,9 @@ export default function ProfileDashboardComponents() {
       // Append image if selected
       if (imageFile) {
         formDataToSend.append("image", imageFile);
-        console.log("Appending image to FormData:", imageFile);
       }
 
-      console.log("Sending FormData:", formDataToSend);
-
       const response = await updateProfile({ data: formDataToSend }).unwrap();
-      console.log(response);
 
       if (response.success) {
         toast.success("Profile updated successfully!");

@@ -23,7 +23,7 @@ const SubscriptionPageComponent = () => {
   const [checkoutForSubscription, { isLoading: isCheckoutLoading }] =
     useCheckoutForSubscriptionMutation();
   const [selectedPlan, setSelectedPlan] = useState("");
-  console.log(data);
+  // console.log(data);
 
   // Filter packages to show only web subscription types
   const webPackages = React.useMemo(() => {

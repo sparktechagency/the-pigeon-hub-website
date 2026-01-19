@@ -3,8 +3,7 @@ import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 
 const PigeonDatabaseOverview = ({ data, onStatusFilter, selectedStatus }) => {
-  console.log("selected", selectedStatus);
-  console.log("onFilter", onStatusFilter);
+ 
   // Calculate statistics from the data
   const getStats = () => {
     if (!data?.data?.data)
@@ -19,7 +18,6 @@ const PigeonDatabaseOverview = ({ data, onStatusFilter, selectedStatus }) => {
       };
 
     const pigeons = data.data.data;
-    console.log("pigeons", pigeons);
     const stats = {
       all: data.data.pagination?.total || pigeons.length,
       racing: 0,

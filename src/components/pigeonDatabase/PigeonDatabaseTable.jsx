@@ -68,6 +68,10 @@ const PigeonTable = ({
     direction: null,
   });
 
+    useEffect(() => {
+  onSortChange?.("-iconicScore");
+}, []);
+
   // Grab scroll functionality
   const tableContainerRef = useRef(null);
   const [isGrabbing, setIsGrabbing] = useState(false);
@@ -156,6 +160,9 @@ const PigeonTable = ({
   if (isLoading) {
     return <TableSkeleton />;
   }
+
+
+
 
   if (!pigeons.length) {
     return (
@@ -517,11 +524,11 @@ const PigeonTable = ({
                           {pigeon.birthYear}
                         </TableCell>
                         <TableCell className=" text-center">
-                          {pigeon.breederRating}
+                          {pigeon.breederRating || "N/A"}
                         </TableCell>
 
                         <TableCell className=" text-center">
-                          {pigeon.racingRating || pigeon.racerRating || 0}
+                          {pigeon.racingRating || pigeon.racerRating || "N/A"}
                         </TableCell>
 
                         <TableCell>
@@ -538,7 +545,7 @@ const PigeonTable = ({
 
                         <TableCell>
                           <div className="text-yellow-500">
-                            {pigeon.iconicScore}
+                            {pigeon.iconicScore || "N/A"}
                           </div>
                         </TableCell>
 

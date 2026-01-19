@@ -5,7 +5,7 @@ import { useGetSettingQuery } from "@/redux/featured/settings/settingApi";
 export default function Terms() {
   const { data } = useGetSettingQuery();
   const terms = data?.data;
-  console.log("terms", terms);
+  // console.log("terms", terms);
   return (
     <div className="flex  justify-center items-center my-12">
       <Card className="w-full px-4   text-black ">

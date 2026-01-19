@@ -51,7 +51,6 @@ import { getImageUrl } from "../share/imageUrl";
 
 const PigeonNode = ({ data }) => {
   const countryCode = data.country ? getCode(data.country) : null;
-  console.log("color", data.color);
 
   // Check if this is the subject node (generation 0)
   const isSubject = data.generation === 0;
@@ -361,11 +360,9 @@ const nodeTypes = {
 export default function PigeonPedigreeChart() {
   const { id } = useParams();
   const { data: profileData } = useMyProfileQuery();
-  console.log("pedigree", profileData?.role);
   const role = profileData?.role;
   const { data: pedigreeData, isLoading } =
     useGetPigeonPedigreeChartDataQuery(id);
-  console.log("pedigreeData", pedigreeData);
   const chartRef = useRef(null);
 
   const { nodes: dynamicNodes, edges: dynamicEdges } = useMemo(() => {

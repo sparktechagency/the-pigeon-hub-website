@@ -5,7 +5,7 @@ import { useGetSettingQuery } from "@/redux/featured/settings/settingApi";
 export default function PrivacyPolicy() {
   const { data } = useGetSettingQuery("privacy-policy");
   const policy = data?.data 
-  console.log(policy)
+  // console.log(policy)
    
   return (
     <div className="flex  justify-center items-center my-12">
