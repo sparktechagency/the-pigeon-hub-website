@@ -398,7 +398,7 @@ export const exportPedigreeToPDF = async (
 
       // === COLOR NAME ===
       if (data.colorName && currentY < y + height - 10) {
-        pdf.setFontSize(6);
+        pdf.setFontSize(7);
         pdf.setFont("helvetica", "normal");
         pdf.setTextColor(0, 0, 0);
         currentY = addWrappedText(
@@ -421,7 +421,7 @@ const hasAchievements =
 
 // === DESCRIPTION ===
 if (hasDescription && availableSpace > 10) {
-  pdf.setFontSize(6);
+  pdf.setFontSize(7);
   pdf.setFont("helvetica", "italic");
   pdf.setTextColor(0, 0, 0);
 
@@ -454,7 +454,7 @@ if (hasAchievements) {
   const remainingSpace = y + height - currentY - 2;
 
   if (remainingSpace > 5) {
-    pdf.setFontSize(5.5);
+    pdf.setFontSize(7);
     pdf.setFont("helvetica", "normal");
     pdf.setTextColor(0, 0, 0);
 
